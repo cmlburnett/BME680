@@ -14,16 +14,57 @@ This project does NOT interface with the BME680 at a chip level and this library
 Example BME680 data calculation:
 	1) Register reads in hex values:
 		Pressure
-			BME680[0x1F]		4F
-			BME680[0x20]		28
-			BME680[0x21]		A0
+			BME680[0x1F]		4F	4th and 5th nibbles
+			BME680[0x20]		28	2nd and 3rd nibbles
+			BME680[0x21]		A0	lowest nibble
 		Temperature
-			BME680[0x22]		77
-			BME680[0x23]		B6
-			BME680[0x24]		D0
+			BME680[0x22]		77	4th and 5th nibbles
+			BME680[0x23]		B6	2nd and 3rd nibbles
+			BME680[0x24]		D0	lowest nibble
 		Humidity
-			BME680[0x25]		49
-			BME680[0x26]		D9
+			BME680[0x25]		49	MSB
+			BME680[0x26]		D9	LSB
+
+		Calibration data
+			BME680[0x8A]		E5	T2 LSB
+			BME680[0x8B]		66	T2 MSB
+			BME680[0x8C]		03	T3
+			BME680[0x8D]			<UNUSED>
+			BME680[0x8E]		A4	P1 LSB
+			BME680[0x8F]		91	P1 MSB
+			BME680[0x90]		AF	P2 LSB
+			BME680[0x91]		D6	P2 MSB
+			BME680[0x92]		58	P3
+			BME680[0x93]			<UNUSED>
+			BME680[0x94]		76	P4 LSB
+			BME680[0x95]		1F	P4 MSB
+			BME680[0x96]		86	P5 LSB
+			BME680[0x97]		FF	P5 MSB
+			BME680[0x98]		34	P7
+			BME680[0x99]		1E	P6
+			BME680[0x9A]			<UNUSED>
+			BME680[0x9B]			<UNUSED>
+			BME680[0x9C]		C9	P8 LSB
+			BME680[0x9D]		F0	P8 MSB
+			BME680[0x9E]		DB	P9 LSB
+			BME680[0x9F]		F7	P9 MSB
+			BME680[0xA0]		1E	P10
+			...
+			BME680[0xE1]		40	H2 upper two nibbles (bits 4 to 11)
+			BME680[0xE2]		6C	lower nibble is lowest nibble of H2, upper nibble is lowest nibble of H1
+			BME680[0xE3]		29	H1 upper two nibbles (bits 4 to 11)
+			BME680[0xE4]		00	H3
+			BME680[0xE5]		2D	H4
+			BME680[0xE6]		14	H5
+			BME680[0xE7]		78	H6
+			BME680[0xE8]		9C	H7
+			BME680[0xE9]		9C	T1 LSB
+			BME680[0xEA]		66	T1 MSB
+			BME680[0xEB]		27	G2 LSB
+			BME680[0xEC]		CF	G2 MSB
+			BME680[0xED]		ED	G1
+			BME680[0xEE]		12	G3
+
 	2) Converting to decimal (registers are little endian and lower nibble of 0x21 and 0x24 are thrown away, hence the shift):
 		P		(0x4F28A0 >> 4) == 0x4F28A == 324234
 		T		(0x77B6D0 >> 4) == 0x77B6D == 490349
@@ -32,36 +73,37 @@ Example BME680 data calculation:
 		P		324234
 		H		18905
 		T		490349
-	Calibration constants on my BME680:
-		G1		-19
-		G2		-12505
-		G3		18
-		H1		668
-		H2		1030
-		H3		0
-		H4		45
-		H5		20
-		H6		120
-		H7		-100
-		P1		37284
-		P10		30
-		P2		-10577
-		P3		88
-		P4		8054
-		P5		-122
-		P6		30
-		P7		52
-		P8		-3895
-		P9		-2085
-		T1		26268
-		T2		26341
-		T3		3
+	Calibration constants on my BME680 (with type specified needed to interpret from BME680 register data):
+		G1		-19				signed 8-bit
+		G2		-12505			signed 16-bit
+		G3		18				signed 8-bit
+		H1		668				unsigned 12-bit
+		H2		1030			unsigned 12-bit
+		H3		0				signed 8-bit
+		H4		45				signed 8-bit
+		H5		20				signed 8-bit
+		H6		120				unsigned 8-bit
+		H7		-100			signed 8-bit
+		P1		37284			unsigned 16-bit
+		P2		-10577			signed 16-bit
+		P3		88				signed 8-bit
+		P4		8054			signed 16-bit
+		P5		-122			signed 16-bit
+		P6		30				signed 8-bit
+		P7		52				signed 8-bit
+		P8		-3895			signed 16-bit
+		P9		-2085			signed 16-bit
+		P10		30				unsigned 8-bit
+		T1		26268			unsigned 16-bit
+		T2		26341			signed 16-bit
+		T3		3				signed 8-bit
 	
 	4) This results in the following float values per Calculate_PHT()
 		P		99245.89
 		H		42.019
 		T		22.0
 	Thus, the pressure is 99245 pascals, 42.02% relative humidity, and 22.0 Celcius.
+
 	5) Further, from the other helper functions below:
 		Qa					0.0064102890625
 		STP correction		0.90647187859289
