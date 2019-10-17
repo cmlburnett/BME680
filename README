@@ -11,6 +11,10 @@ There are additional support functions that dovetail with things done with these
 
 This project does NOT interface with the BME680 at a chip level and this library is intended to be used on a desktop machine with sufficient speed to handle the float operations.
 
+In developing this code, I have realized a couple things:
+1) Version 1.3 of the datasheet incorrectly indentifies the nibbles for H1 and H2 (I attempted to email Bosch for a correction, but they blew me off and said to go register for their community forum and post my question (?) there; but it wasn't a question, it was an FYI. Excellent customer service, Bosch.) Anyway, this correct behavior was ascertained by looking at their reference implementation BSEC 1.4.7.4.
+2) The pressure, temperature, humidity data are in Big Endian and their calibration data is in Little Endian. Why? Dunno. But that's not strictly true as 0xE1-0xE3 is a weird mix of endianness.
+
 Example BME680 data calculation:
 	1) Register reads in hex values:
 		Pressure
@@ -29,21 +33,21 @@ Example BME680 data calculation:
 			BME680[0x8A]		E5	T2 LSB
 			BME680[0x8B]		66	T2 MSB
 			BME680[0x8C]		03	T3
-			BME680[0x8D]			<UNUSED>
+			BME680[0x8D]		<UNUSED>
 			BME680[0x8E]		A4	P1 LSB
 			BME680[0x8F]		91	P1 MSB
 			BME680[0x90]		AF	P2 LSB
 			BME680[0x91]		D6	P2 MSB
 			BME680[0x92]		58	P3
-			BME680[0x93]			<UNUSED>
+			BME680[0x93]		<UNUSED>
 			BME680[0x94]		76	P4 LSB
 			BME680[0x95]		1F	P4 MSB
 			BME680[0x96]		86	P5 LSB
 			BME680[0x97]		FF	P5 MSB
 			BME680[0x98]		34	P7
 			BME680[0x99]		1E	P6
-			BME680[0x9A]			<UNUSED>
-			BME680[0x9B]			<UNUSED>
+			BME680[0x9A]		<UNUSED>
+			BME680[0x9B]		<UNUSED>
 			BME680[0x9C]		C9	P8 LSB
 			BME680[0x9D]		F0	P8 MSB
 			BME680[0x9E]		DB	P9 LSB
