@@ -1,0 +1,6 @@
+*.swp
+*.swo
+.AppleDouble
+*.tmp
+build
+__pycache__
