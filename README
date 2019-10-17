@@ -4,14 +4,14 @@ The BME680 is an environmental sensor manufactured by Bosch
 
 	https://www.bosch-sensortec.com/bst/products/all_products/bme680
 
-It is alble to calculate pressure, humidity, temperature, and air quality.
+It is able to calculate pressure, humidity, temperature, and air quality.
 This project implements the float algorithm to convert ADC values recorded by the sensor and calculate these readings in usable units.
 All math is done natively in Python with the math module.
 There are additional support functions that dovetail with things done with these kind of sensors.
 
 This project does NOT interface with the BME680 at a chip level and this library is intended to be used on a desktop machine with sufficient speed to handle the float operations.
 
-Example data calculation:
+Example BME680 data calculation:
 	1) Register reads in hex values:
 		Pressure
 			BME680[0x1F]		4F
