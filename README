@@ -109,9 +109,9 @@ Example BME680 data calculation:
 	Thus, the pressure is 99245 pascals, 42.02% relative humidity, and 22.0 Celcius.
 
 	5) Further, from the other helper functions below:
-		Qa					0.0064102890625
-		STP correction		0.90647187859289
-		Psat				2634.79310887939
-		Pvap				1107.11371642003
-		Hvap				2259.50610448612
+		Qa					0.0064102890625			(J/s = W)
+		STP correction		0.90647187859289		(unitless)
+		Psat				2634.79310887939		(Pascals)
+		Pvap				1107.11371642003		(Pascals)
+		Hvap				2259.50610448612		(J/g)
 
