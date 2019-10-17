@@ -9,3 +9,63 @@ This project implements the float algorithm to convert ADC values recorded by th
 All math is done natively in Python with the math module.
 There are additional support functions that dovetail with things done with these kind of sensors.
 
+This project does NOT interface with the BME680 at a chip level and this library is intended to be used on a desktop machine with sufficient speed to handle the float operations.
+
+Example data calculation:
+	1) Register reads in hex values:
+		Pressure
+			BME680[0x1F]		4F
+			BME680[0x20]		28
+			BME680[0x21]		A0
+		Temperature
+			BME680[0x22]		77
+			BME680[0x23]		B6
+			BME680[0x24]		D0
+		Humidity
+			BME680[0x25]		49
+			BME680[0x26]		D9
+	2) Converting to decimal (registers are little endian and lower nibble of 0x21 and 0x24 are thrown away, hence the shift):
+		P		(0x4F28A0 >> 4) == 0x4F28A == 324234
+		T		(0x77B6D0 >> 4) == 0x77B6D == 490349
+		H		0x49D9 == 18905
+	3) Raw ADC values from BME680 as determined by unpacking the registers as done above:
+		P		324234
+		H		18905
+		T		490349
+	Calibration constants on my BME680:
+		G1		-19
+		G2		-12505
+		G3		18
+		H1		668
+		H2		1030
+		H3		0
+		H4		45
+		H5		20
+		H6		120
+		H7		-100
+		P1		37284
+		P10		30
+		P2		-10577
+		P3		88
+		P4		8054
+		P5		-122
+		P6		30
+		P7		52
+		P8		-3895
+		P9		-2085
+		T1		26268
+		T2		26341
+		T3		3
+	
+	4) This results in the following float values per Calculate_PHT()
+		P		99245.89
+		H		42.019
+		T		22.0
+	Thus, the pressure is 99245 pascals, 42.02% relative humidity, and 22.0 Celcius.
+	5) Further, from the other helper functions below:
+		Qa					0.0064102890625
+		STP correction		0.90647187859289
+		Psat				2634.79310887939
+		Pvap				1107.11371642003
+		Hvap				2259.50610448612
+
