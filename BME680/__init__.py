@@ -1,9 +1,12 @@
 """
 Implementation of float algorithm in calculating pressure, temperature, and humidity from BME680 readings.
+Gas features not implemented.
+This is not an I2C/SPI implementation to interact with the BME680 chip itself, this is the heavy float implementation to be done on a desktop.
+Calculate_PHT assumes you have the raw data from the BME680 converted into int() types (step 1 & 2 below are not implemented here).
 
 Example data calculation:
 
-	Register reads in hex values:
+	1) Register reads in hex values:
 		Pressure
 			BME680[0x1F]		4F
 			BME680[0x20]		28
@@ -18,12 +21,12 @@ Example data calculation:
 			BME680[0x25]		49
 			BME680[0x26]		D9
 
-	Converting to decimal (registers are little endian and lower nibble of 0x21 and 0x24 are thrown away, hence the shift):
+	2) Converting to decimal (registers are little endian and lower nibble of 0x21 and 0x24 are thrown away, hence the shift):
 		P		(0x4F28A0 >> 4) == 0x4F28A == 324234
 		T		(0x77B6D0 >> 4) == 0x77B6D == 490349
 		H		0x49D9 == 18905
 
-	Raw ADC values from BME680 as determined by unpacking the registers as done above:
+	3) Raw ADC values from BME680 as determined by unpacking the registers as done above:
 		P		324234
 		H		18905
 		T		490349
@@ -53,14 +56,14 @@ Example data calculation:
 		T2		26341
 		T3		3
 	
-	This results in the following float values per Calculate_PHT()
+	4) This results in the following float values per Calculate_PHT()
 		P		99245.89
 		H		42.019
 		T		22.0
 
 	Thus, the pressure is 99245 pascals, 42.02% relative humidity, and 22.0 Celcius.
 
-	Further, from the other helper functions below:
+	5) Further, from the other helper functions below:
 		Qa					0.0064102890625
 		STP correction		0.90647187859289
 		Psat				2634.79310887939
